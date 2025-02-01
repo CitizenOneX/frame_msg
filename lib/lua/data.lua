@@ -75,8 +75,10 @@ function _M.update_app_data_accum(data)
         end
     )
     if rc == false then
-        -- send the error back on the stdout stream
+        -- send the error back on the stdout stream otherwise the data handler thread fails silently
         print('Error in data accumulator: ' .. err)
+        -- rethrow the error, especially important to propagate the break signal to stop execution
+        error(err)
     end
 end
 
@@ -109,8 +111,10 @@ function _M.process_raw_items()
         end
     )
     if rc == false then
-        -- send the error back on the stdout stream
+        -- send the error back on the stdout stream otherwise the data handler thread fails silently
         print('Error processing raw items: ' .. err)
+        -- rethrow the error, especially important to propagate the break signal to stop execution
+        error(err)
     end
 
     return processed
