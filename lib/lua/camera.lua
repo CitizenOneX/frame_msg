@@ -127,7 +127,7 @@ end
 
 -- Runs the auto exposure algorithm with the current settings (call this every 100ms)
 function _M.run_auto_exposure()
-	frame.camera.auto{auto_exp_settings}
+	frame.camera.auto(auto_exp_settings)
 end
 
 -- takes a capture_settings table and sends the image data to the host
