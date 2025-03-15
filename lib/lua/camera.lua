@@ -4,6 +4,8 @@ local _M = {}
 -- Frame to phone flags
 local IMAGE_MSG = 0x07
 local IMAGE_FINAL_MSG = 0x08
+local AUTOEXP_DATA_MSG = 0x11
+local METERING_DATA_MSG = 0x12
 
 -- local state to capture the stateful camera settings
 local quality_values = {'VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'}
@@ -14,17 +16,18 @@ local auto_exp_settings = {
 	metering = 'AVERAGE',
 	exposure = 0.18,
 	exposure_speed = 0.5,
-	shutter_limit = 800,
-	analog_gain_limit = 248.0,
-	white_balance_speed = 0.5
+	shutter_limit = 3072,
+	analog_gain_limit = 16.0,
+	white_balance_speed = 0.5,
+	rgb_gain_limit = 141
 }
 
 local manual_exp_settings = {
-	shutter = 800,
-	analog_gain = 100,
-	red_gain = 512,
-	green_gain = 512,
-	blue_gain = 512
+	shutter = 3072,
+	analog_gain = 16,
+	red_gain = 121,
+	green_gain = 64,
+	blue_gain = 140
 }
 
 -- auto/manual status, accessible outside the module
@@ -68,6 +71,7 @@ function _M.parse_auto_exp_settings(data)
 	settings.shutter_limit = string.byte(data, 4) << 8 | string.byte(data, 5) & 0x3FFF
 	settings.analog_gain_limit = string.byte(data, 6) & 0xFF
 	settings.white_balance_speed = string.byte(data, 7) / 255.0
+	settings.rgb_gain_limit = string.byte(data, 8) << 8 | string.byte(data, 9) & 0x3FF
 
 	return settings
 end
@@ -103,7 +107,7 @@ end
 -- send data with retries and no sleeps, bail after 2 seconds
 function send_data(data)
 	local sent = false
-	local retry_count = 0
+
 	-- 2 second time limit for this packet else bail out
 	local try_until = frame.time.utc() + 2
 
@@ -111,14 +115,8 @@ function send_data(data)
 		if pcall(frame.bluetooth.send, data) then
 			sent = true
 			break
-		else
-			retry_count = retry_count + 1
 		end
 	end
-
-	--if retry_count > 0 then
-	--	print('retries: ' .. tostring(retry_count))
-	--end
 
 	if not sent then
 		error('Error sending photo data')
@@ -127,7 +125,47 @@ end
 
 -- Runs the auto exposure algorithm with the current settings (call this every 100ms)
 function _M.run_auto_exposure()
-	frame.camera.auto(auto_exp_settings)
+	-- pass the table into the function with parentheses, don't wrap again in curly braces, it's already a table
+	return frame.camera.auto(auto_exp_settings)
+end
+
+function _M.send_autoexp_result(autoexp)
+	-- Pack the message code as an unsigned byte (B)
+    -- followed by 16 floats (f) in little-endian format
+    local data = string.pack("<Bffffffffffffffff",
+		AUTOEXP_DATA_MSG,
+        -- Top level values
+        autoexp['error'],
+        autoexp['shutter'],
+        autoexp['analog_gain'],
+        autoexp['red_gain'],
+        autoexp['green_gain'],
+        autoexp['blue_gain'],
+
+        -- Brightness values
+        autoexp['brightness']['center_weighted_average'],
+        autoexp['brightness']['scene'],
+
+        -- Brightness matrix values
+        autoexp['brightness']['matrix']['r'],
+        autoexp['brightness']['matrix']['g'],
+        autoexp['brightness']['matrix']['b'],
+        autoexp['brightness']['matrix']['average'],
+
+        -- Brightness spot values
+        autoexp['brightness']['spot']['r'],
+        autoexp['brightness']['spot']['g'],
+        autoexp['brightness']['spot']['b'],
+        autoexp['brightness']['spot']['average']
+    )
+
+    -- Total size: 1 byte for message code + (16 floats * 4 bytes) = 65 bytes
+	send_data(data)
+end
+
+-- send the current spot and matrix rgb values from the FPGA (as used by the auto exposure algorithm)
+function _M.send_metering_data()
+	send_data(string.char(METERING_DATA_MSG) .. frame.fpga_read(0x25, 6))
 end
 
 -- takes a capture_settings table and sends the image data to the host

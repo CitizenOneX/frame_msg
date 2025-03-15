@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Updated auto exposure and white balance settings / manual exposure settings / camera stdlua to support `rgb_gain_limit` parameter in updated firmware.
+
 ## 0.0.3
 
 * Rethrow errors caught in the data handler. Errors are printed to stdout but still rethrown, which is particularly important to make sure we don't swallow the break signal - the running Lua code needs to terminate. Other errors can still be handled by the main application loop if desired.

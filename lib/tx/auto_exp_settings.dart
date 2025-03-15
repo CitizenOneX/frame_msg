@@ -11,22 +11,25 @@ class TxAutoExpSettings extends TxMsg {
   final int _shutterLimit;
   final int _analogGainLimit;
   final double _whiteBalanceSpeed;
+  final int _rgbGainLimit;
 
   TxAutoExpSettings({
       required super.msgCode,
       int meteringIndex = 2, // ['SPOT', 'CENTER_WEIGHTED', 'AVERAGE'];
       double exposure = 0.18, // 0.0 <= val <= 1.0
       double exposureSpeed = 0.5, // 0.0 <= val <= 1.0
-      int shutterLimit = 800, // 4 <= val <= 16383
-      int analogGainLimit = 248, // 0 <= val <= 248
+      int shutterLimit = 3072, // 4 <= val <= 16383
+      int analogGainLimit = 16, // 0 <= val <= 248
       double whiteBalanceSpeed = 0.5, // 0.0 <= val <= 1.0
+      int rgbGainLimit = 141, // 0 <= val <= 1023
       })
       : _meteringIndex = meteringIndex,
         _exposure = exposure,
         _exposureSpeed = exposureSpeed,
         _shutterLimit = shutterLimit,
         _analogGainLimit = analogGainLimit,
-        _whiteBalanceSpeed = whiteBalanceSpeed;
+        _whiteBalanceSpeed = whiteBalanceSpeed,
+        _rgbGainLimit = rgbGainLimit;
 
   @override
   Uint8List pack() {
@@ -40,7 +43,11 @@ class TxAutoExpSettings extends TxMsg {
     int intShutLimMsb = (_shutterLimit >> 8) & 0xFF;
     int intShutLimLsb = _shutterLimit & 0xFF;
 
-    // 7 bytes of auto exposure settings. sendMessage will prepend the data byte & msgCode to each packet
+    // RGB gain limit has a range 0..1023 so just map it to a Uint16 over 2 bytes
+    int intRgbGainLimMsb = (_rgbGainLimit >> 8) & 0xFF;
+    int intRgbGainLimLsb = _rgbGainLimit & 0xFF;
+
+    // 9 bytes of auto exposure settings. sendMessage will prepend the data byte & msgCode to each packet
     // and the Uint16 payload length to the first packet
     return Uint8List.fromList([
       _meteringIndex & 0xFF,
@@ -50,6 +57,8 @@ class TxAutoExpSettings extends TxMsg {
       intShutLimLsb,
       _analogGainLimit & 0xFF,
       intWhiteBalanceSpeed,
+      intRgbGainLimMsb,
+      intRgbGainLimLsb,
     ]);
   }
 }
