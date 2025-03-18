@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Tweaked auto exposure and white balance settings / manual exposure settings / camera stdlua values further
+
 ## 1.0.0
 
 * Updated auto exposure and white balance settings / manual exposure settings / camera stdlua to support `rgb_gain_limit` parameter in updated firmware.

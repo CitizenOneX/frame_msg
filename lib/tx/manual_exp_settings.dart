@@ -13,8 +13,8 @@ class TxManualExpSettings extends TxMsg {
 
   TxManualExpSettings({
       required super.msgCode,
-      int manualShutter = 3072, // 4 <= val <= 16383
-      int manualAnalogGain = 16, // 0 <= val <= 248
+      int manualShutter = 4096, // 4 <= val <= 16383
+      int manualAnalogGain = 1, // 0 <= val <= 248
       int manualRedGain = 121, // 0 <= val <= 1023
       int manualGreenGain = 64, // 0 <= val <= 1023
       int manualBlueGain = 140, // 0 <= val <= 1023
