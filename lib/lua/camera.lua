@@ -13,18 +13,18 @@ local metering_values = {'SPOT', 'CENTER_WEIGHTED', 'AVERAGE'}
 
 -- default settings
 local auto_exp_settings = {
-	metering = 'AVERAGE',
-	exposure = 0.18,
-	exposure_speed = 0.5,
-	shutter_limit = 3072,
+	metering = 'CENTER_WEIGHTED',
+	exposure = 0.1,
+	exposure_speed = 0.45,
+	shutter_limit = 16383,
 	analog_gain_limit = 16.0,
 	white_balance_speed = 0.5,
-	rgb_gain_limit = 141
+	rgb_gain_limit = 287
 }
 
 local manual_exp_settings = {
-	shutter = 3072,
-	analog_gain = 16,
+	shutter = 4096,
+	analog_gain = 1,
 	red_gain = 121,
 	green_gain = 64,
 	blue_gain = 140

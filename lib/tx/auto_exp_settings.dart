@@ -15,13 +15,13 @@ class TxAutoExpSettings extends TxMsg {
 
   TxAutoExpSettings({
       required super.msgCode,
-      int meteringIndex = 2, // ['SPOT', 'CENTER_WEIGHTED', 'AVERAGE'];
-      double exposure = 0.18, // 0.0 <= val <= 1.0
-      double exposureSpeed = 0.5, // 0.0 <= val <= 1.0
-      int shutterLimit = 3072, // 4 <= val <= 16383
+      int meteringIndex = 1, // ['SPOT', 'CENTER_WEIGHTED', 'AVERAGE'];
+      double exposure = 0.1, // 0.0 <= val <= 1.0
+      double exposureSpeed = 0.45, // 0.0 <= val <= 1.0
+      int shutterLimit = 16383, // 4 <= val <= 16383
       int analogGainLimit = 16, // 0 <= val <= 248
       double whiteBalanceSpeed = 0.5, // 0.0 <= val <= 1.0
-      int rgbGainLimit = 141, // 0 <= val <= 1023
+      int rgbGainLimit = 287, // 0 <= val <= 1023
       })
       : _meteringIndex = meteringIndex,
         _exposure = exposure,
