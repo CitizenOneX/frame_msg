@@ -1,3 +1,7 @@
+## 1.0.2
+
+* README updates for package homepage
+
 ## 1.0.1
 
 * Tweaked auto exposure and white balance settings / manual exposure settings / camera stdlua values further
