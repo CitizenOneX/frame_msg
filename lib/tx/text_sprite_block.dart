@@ -6,8 +6,19 @@ import 'package:image/image.dart' as img;
 import '../tx_msg.dart';
 import 'sprite.dart';
 
+/// Represents an (optionally) multi-line block of text of a specified width and number of visible rows at a specified lineHeight
+/// If the supplied text string is longer, only the last `displayRows` will be shown rendered and sent to Frame.
+/// If the supplied text string has fewer than or equal to `displayRows`, only the number of actual rows will be rendered and sent to Frame
+/// If any given line of text is shorter than width, the text Sprite will be set to the actual width required.
+/// When sending TxTextSpriteBlock to Frame, the sendMessage() will send the header with block dimensions and line-by-line offsets
+/// and the user then sends each line[] as a TxSprite message with the same msgCode as the Block, and the frame app will use the offsets
+/// to place each line. By sending each line separately we can display them as they arrive, as well as reducing overall memory
+/// requirement (each concat() call is smaller).
+/// After calling the constructor, check `isNotEmpty` before calling `rasterize()` and sending the header or the sprites.
+/// Sending a TextSpriteBlock with no lines is not intended usage.
+/// `text` is trimmed (leading and trailing whitespace) before laying out the paragraph, but any blank lines
+/// within the range of displayed rows will be sent as an empty (1px) TxSprite
 class TxTextSpriteBlock extends TxMsg {
-  final int _msgCode;
   final int _width;
   int get width => _width;
   final int _fontSize;
@@ -42,20 +53,7 @@ class TxTextSpriteBlock extends TxMsg {
   /// sprite lines to send, otherwise it should not be rasterized nor sent
   bool get isNotEmpty => _lineMetrics.isNotEmpty;
 
-  /// Represents an (optionally) multi-line block of text of a specified width and number of visible rows at a specified lineHeight
-  /// If the supplied text string is longer, only the last `displayRows` will be shown rendered and sent to Frame.
-  /// If the supplied text string has fewer than or equal to `displayRows`, only the number of actual rows will be rendered and sent to Frame
-  /// If any given line of text is shorter than width, the text Sprite will be set to the actual width required.
-  /// When sending TxTextSpriteBlock to Frame, the sendMessage() will send the header with block dimensions and line-by-line offsets
-  /// and the user then sends each line[] as a TxSprite message with the same msgCode as the Block, and the frame app will use the offsets
-  /// to place each line. By sending each line separately we can display them as they arrive, as well as reducing overall memory
-  /// requirement (each concat() call is smaller).
-  /// After calling the constructor, check `isNotEmpty` before calling `rasterize()` and sending the header or the sprites.
-  /// Sending a TextSpriteBlock with no lines is not intended usage.
-  /// `text` is trimmed (leading and trailing whitespace) before laying out the paragraph, but any blank lines
-  /// within the range of displayed rows will be sent as an empty (1px) TxSprite
-  TxTextSpriteBlock(
-      {required super.msgCode,
+  TxTextSpriteBlock({
       required int width,
       required int fontSize,
       required int maxDisplayRows,
@@ -63,8 +61,7 @@ class TxTextSpriteBlock extends TxMsg {
       ui.TextAlign textAlign = ui.TextAlign.left,
       ui.TextDirection textDirection = ui.TextDirection.ltr,
       required String text})
-      : _msgCode = msgCode,
-        _width = width,
+      : _width = width,
         _fontSize = fontSize,
         _maxDisplayRows = maxDisplayRows {
     final paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
@@ -153,24 +150,23 @@ class TxTextSpriteBlock extends TxMsg {
 
           // make a Sprite out of the line and add to the list
           _sprites.add(TxSprite(
-              msgCode: _msgCode,
-              width: lineWidth,
-              height: lineHeight,
-              numColors: 2,
-              paletteData: _getPalette().data,
-              pixelData: linePixelData));
+            width: lineWidth,
+            height: lineHeight,
+            numColors: 2,
+            paletteData: _getPalette().data,
+            pixelData: linePixelData
+          ));
         }
         else {
           // zero-width line, a blank line in the text block
           // so we make a 1x1 px sprite in the void color
           _sprites.add(TxSprite(
-              msgCode: _msgCode,
-              width: 1,
-              height: 1,
-              numColors: 2,
-              paletteData: _getPalette().data,
-              pixelData: Uint8List(1)));
-
+            width: 1,
+            height: 1,
+            numColors: 2,
+            paletteData: _getPalette().data,
+            pixelData: Uint8List(1)
+          ));
         }
       }
     }

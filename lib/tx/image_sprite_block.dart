@@ -4,6 +4,13 @@ import 'package:image/image.dart' as img;
 import '../tx_msg.dart';
 import 'sprite.dart';
 
+/// Represents an image of a specified size sliced into a number of "sprite lines" of the full width of the image, and the specified height,
+/// and possibly a final sprite line of a different height.
+/// When sending TxImageSpriteBlock to Frame, the sendMessage() will send the header with block dimensions and sprite line height,
+/// and the user then sends each line[] as a TxSprite message with the same msgCode as the Block, and the frame app will use the line height
+/// to place each line. By sending each line separately we can display them as they arrive, as well as reducing overall memory
+/// requirement (each concat() call is smaller).
+/// Sending an ImageSpriteBlock with no lines is not intended usage.
 class TxImageSpriteBlock extends TxMsg {
   final TxSprite _image;
   int get width => _image.width;
@@ -32,15 +39,7 @@ class TxImageSpriteBlock extends TxMsg {
   /// sprite lines to send, otherwise it should not be sent
   bool get isNotEmpty => _spriteLines.isNotEmpty;
 
-  /// Represents an image of a specified size sliced into a number of "sprite lines" of the full width of the image, and the specified height,
-  /// and possibly a final sprite line of a different height.
-  /// When sending TxImageSpriteBlock to Frame, the sendMessage() will send the header with block dimensions and sprite line height,
-  /// and the user then sends each line[] as a TxSprite message with the same msgCode as the Block, and the frame app will use the line height
-  /// to place each line. By sending each line separately we can display them as they arrive, as well as reducing overall memory
-  /// requirement (each concat() call is smaller).
-  /// Sending an ImageSpriteBlock with no lines is not intended usage.
   TxImageSpriteBlock({
-    required super.msgCode,
     required TxSprite image,
     required int spriteLineHeight,
     bool progressiveRender = true,
@@ -53,7 +52,6 @@ class TxImageSpriteBlock extends TxMsg {
     for (int i = 0; i < image.height ~/ spriteLineHeight; i++) {
       _spriteLines.add(
         TxSprite(
-          msgCode: msgCode,
           width: image.width,
           height: spriteLineHeight,
           numColors: image.numColors,
@@ -66,7 +64,6 @@ class TxImageSpriteBlock extends TxMsg {
     if (finalHeight > 0) {
       _spriteLines.add(
         TxSprite(
-          msgCode: msgCode,
           width: image.width,
           height: finalHeight,
           numColors: image.numColors,

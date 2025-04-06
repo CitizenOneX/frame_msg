@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import '../tx_msg.dart';
 
-/// A message containing the msgCode and a String of plain text,
+/// A message containing a String of plain text,
 /// plus optional top-left corner position coordinates for the
 /// text to be printed in the Frame display (Lua/1-based, i.e. [1,1] to [640,400])
 /// plus an optional palette offset (1..15, 0/'VOID' is invalid), plus optional character spacing
@@ -13,7 +13,7 @@ class TxPlainText extends TxMsg {
   final int _paletteOffset;
   final int _spacing;
 
-  TxPlainText({required super.msgCode, required String text, int x = 1, int y = 1, int paletteOffset = 1, int spacing = 4}) : _text = text, _x = x, _y = y, _paletteOffset = paletteOffset, _spacing = spacing;
+  TxPlainText({required String text, int x = 1, int y = 1, int paletteOffset = 1, int spacing = 4}) : _text = text, _x = x, _y = y, _paletteOffset = paletteOffset, _spacing = spacing;
 
   @override
   Uint8List pack() {

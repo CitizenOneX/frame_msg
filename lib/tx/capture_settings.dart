@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import '../tx_msg.dart';
 
-/// A message containing the msgCode and a collection of camera settings suitable for requesting
+/// A message containing a collection of camera settings suitable for requesting
 /// the frameside app to take a photo with the specified settings
 class TxCaptureSettings extends TxMsg {
   final int _resolution;
@@ -11,7 +11,6 @@ class TxCaptureSettings extends TxMsg {
   final bool _raw;
 
   TxCaptureSettings({
-      required super.msgCode,
       int resolution = 512, // any even number between 100 and 720
       int qualityIndex = 4, // zero-based index into [VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH]
       int pan = 0, // any number between -140 and 140, where 0 represents a centered image

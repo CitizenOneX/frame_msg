@@ -21,18 +21,17 @@ class TxSprite extends TxMsg {
 
   /// Create a sprite with the specified size, palette data and pixel data, identified by the specified message code (the identifier used on the Lua side to label this sprite)
   /// width(Uint16), height(Uint16), bpp(Uint8), numColors(Uint8), palette (Uint8 r, Uint8 g, Uint8 b)*numColors, data (length: width x height bytes content: palette index)
-  TxSprite(
-      {required super.msgCode,
-      required int width,
-      required int height,
-      required int numColors,
-      required Uint8List paletteData,
-      required Uint8List pixelData})
-      : _width = width,
-        _height = height,
-        _numColors = numColors,
-        _paletteData = paletteData,
-        _pixelData = pixelData;
+  TxSprite({
+    required int width,
+    required int height,
+    required int numColors,
+    required Uint8List paletteData,
+    required Uint8List pixelData})
+    : _width = width,
+      _height = height,
+      _numColors = numColors,
+      _paletteData = paletteData,
+      _pixelData = pixelData;
 
   /// Create a TxSprite from any image bytes that can be decoded by img.decode()
   /// If it's an indexed image, quantize down to 14 colors if larger
@@ -43,7 +42,7 @@ class TxSprite extends TxMsg {
   /// TODO improve quantization - quality, speed
   /// If quantizing, since neuralNet seems to give the black in entry 0 and white in the last entry
   /// We just leave 0 (black) and swap palette entries 1 and 15 (and remap those pixels)
-  TxSprite.fromImageBytes({required super.msgCode, required Uint8List imageBytes}) {
+  TxSprite.fromImageBytes({required Uint8List imageBytes}) {
     var image = img.decodeImage(imageBytes);
 
     if (image == null) throw Exception('Unable to decode image file');
@@ -224,7 +223,7 @@ class TxSprite extends TxMsg {
   /// Sprites should be PNGs with palettes of up to 2, 4, or 16 colors (1-, 2-, or 4-bit indexed palettes)
   /// Alpha channel (4th-RGBA), if present, is dropped before sending to Frame (RGB only, but color 0 is VOID)
   /// Scale to 640x400 if larger, preserving aspect ratio
-  TxSprite.fromPngBytes({required super.msgCode, required Uint8List pngBytes}) {
+  TxSprite.fromPngBytes({required Uint8List pngBytes}) {
     var imgPng = img.PngDecoder().decode(pngBytes);
 
     if (imgPng != null &&

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import '../tx_msg.dart';
 
-/// A message containing the msgCode and a collection of camera settings suitable for requesting
+/// A message containing a collection of camera settings suitable for requesting
 /// the frameside app enable auto exposure and gain with the specified settings
 class TxAutoExpSettings extends TxMsg {
   final int _meteringIndex;
@@ -14,7 +14,6 @@ class TxAutoExpSettings extends TxMsg {
   final int _rgbGainLimit;
 
   TxAutoExpSettings({
-      required super.msgCode,
       int meteringIndex = 1, // ['SPOT', 'CENTER_WEIGHTED', 'AVERAGE'];
       double exposure = 0.1, // 0.0 <= val <= 1.0
       double exposureSpeed = 0.45, // 0.0 <= val <= 1.0

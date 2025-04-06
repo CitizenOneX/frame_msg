@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import '../tx_msg.dart';
 
-/// A message containing the msgCode and a collection of camera settings suitable for requesting
+/// A message containing a collection of camera settings suitable for requesting
 /// the frameside app enable manual exposure and gain with the specified settings
 class TxManualExpSettings extends TxMsg {
   final int _manualShutter;
@@ -12,7 +12,6 @@ class TxManualExpSettings extends TxMsg {
   final int _manualBlueGain;
 
   TxManualExpSettings({
-      required super.msgCode,
       int manualShutter = 4096, // 4 <= val <= 16383
       int manualAnalogGain = 1, // 0 <= val <= 248
       int manualRedGain = 121, // 0 <= val <= 1023
