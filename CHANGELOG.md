@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Removed redundant `msgCode` from TxMsg types. `msgCode` is a transport detail provided to FrameBle at the time of message sending, and does not need to be coupled to the rich message object.
+
 ## 1.0.2
 
 * README updates for package homepage
