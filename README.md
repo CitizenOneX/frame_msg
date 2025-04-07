@@ -10,5 +10,6 @@ Application-level library for passing rich objects between a host program and [B
 
 ## See Also
 
+* [Corresponding Lua files for Frameside message handling (GitHub)](https://github.com/CitizenOneX/frame_msg/tree/main/lib/lua)
 * [`frame_ble`](https://pub.dev/packages/frame_ble) low-level package for Bluetooth LE transport on Android/iOS.
 * [`simple_frame_app`](https://pub.dev/packages/simple_frame_app) and its many example applications in [GitHub](https://github.com/CitizenOneX?tab=repositories) for demonstrations of `frame-msg` being used by that framework.
